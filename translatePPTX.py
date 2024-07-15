@@ -11,7 +11,7 @@ pip install requests python-pptx tqdm
 '''
 
 # Set your Google Cloud API key
-API_KEY = "AIzaSyA6pPQr7he8hD59u5yUt0urBeWDbbVDVLk"
+API_KEY = ""
 
 def translate_text(text, target_language):
     url = f"https://translation.googleapis.com/language/translate/v2?key={API_KEY}"
