@@ -13,6 +13,18 @@ pip install requests python-pptx tqdm
 # Set your Google Cloud API key
 API_KEY = ""
 
+# GET languages supported
+def get_supported_languages(api_key):
+    url = f"https://translation.googleapis.com/language/translate/v2/languages?key={api_key}"
+    response = requests.get(url)
+    if response.status_code == 200:
+        languages = response.json().get("data", {}).get("languages", [])
+        return [lang['language'] for lang in languages]
+    else:
+        print(f"Error fetching supported languages: {response.status_code} {response.text}")
+        return []
+
+# POST translate test
 def translate_text(text, target_language):
     url = f"https://translation.googleapis.com/language/translate/v2?key={API_KEY}"
     headers = {
@@ -86,7 +98,7 @@ def main():
     print("French: fr")
     print("German: de")
     print("")
-    print("See Full List of ISO 639 Languages here: " + link('https://en.wikipedia.org/wiki/List_of_ISO_639_language_codes'))
+    print("See Full List of ISO 639 Languages here: " + link('https://cloud.google.com/translate/docs/languages'))
     print("")
 
     parser = argparse.ArgumentParser(description="Translate a PowerPoint presentation. Usage: python3 translatePPTX.py <input_pptx_file> <target_language>")
@@ -94,19 +106,8 @@ def main():
     parser.add_argument("target_language", help="Target language for translation (ex: 'en' for English, 'es' for Spanish)")
     args = parser.parse_args()
 
-    # check if users code is valid before running it (it will cause a bunch of errors @ api endpoint)
-    valid_language_codes = [
-        'aa', 'ab', 'ae', 'af', 'ak', 'am', 'an', 'ar', 'as', 'av', 'ay', 'az', 'ba', 'be', 'bg', 'bi', 'bm', 'bn', 'bo', 
-        'br', 'bs', 'ca', 'ce', 'ch', 'co', 'cr', 'cs', 'cu', 'cv', 'cy', 'da', 'de', 'dv', 'dz', 'ee', 'el', 'en', 'eo', 
-        'es', 'et', 'eu', 'fa', 'ff', 'fi', 'fj', 'fo', 'fr', 'fy', 'ga', 'gd', 'gl', 'gn', 'gu', 'gv', 'ha', 'he', 'hi', 
-        'ho', 'hr', 'ht', 'hu', 'hy', 'hz', 'ia', 'id', 'ie', 'ig', 'ii', 'ik', 'io', 'is', 'it', 'iu', 'ja', 'jv', 'ka', 
-        'kg', 'ki', 'kj', 'kk', 'kl', 'km', 'kn', 'ko', 'kr', 'ks', 'ku', 'kv', 'kw', 'ky', 'la', 'lb', 'lg', 'li', 'ln', 
-        'lo', 'lt', 'lu', 'lv', 'mg', 'mh', 'mi', 'mk', 'ml', 'mn', 'mr', 'ms', 'mt', 'my', 'na', 'nb', 'nd', 'ne', 'ng', 
-        'nl', 'nn', 'no', 'nr', 'nv', 'ny', 'oc', 'oj', 'om', 'or', 'os', 'pa', 'pi', 'pl', 'ps', 'pt', 'qu', 'rm', 'rn', 
-        'ro', 'ru', 'rw', 'sa', 'sc', 'sd', 'se', 'sg', 'si', 'sk', 'sl', 'sm', 'sn', 'so', 'sq', 'sr', 'ss', 'st', 'su', 
-        'sv', 'sw', 'ta', 'te', 'tg', 'th', 'ti', 'tk', 'tl', 'tn', 'to', 'tr', 'ts', 'tt', 'tw', 'ty', 'ug', 'uk', 'ur', 
-        'uz', 've', 'vi', 'vo', 'wa', 'wo', 'xh', 'yi', 'yo', 'za', 'zh', 'zu'
-    ]
+    # check if users code is valid before running it (otherwise it will cause a bunch of errors @ api endpoint)
+    valid_language_codes = get_supported_languages(API_KEY)
 
     if args.target_language in valid_language_codes:
         process_presentation(args.input_file, args.target_language)
