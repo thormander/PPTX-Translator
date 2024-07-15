@@ -1,28 +1,50 @@
-from os import environ
+import os
+import json
 import argparse
+import requests
 from pptx import Presentation
-from google.cloud import translate_v2 as translate
 from tqdm import tqdm
+from google.auth import jwt
+from google.auth.transport.requests import Request
 
-# Google cloud api key for translations here
+# Set the Google Cloud API key
 API_KEY = "Google_API.json"
-environ["GOOGLE_APPLICATION_CREDENTIALS"] = API_KEY
+os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = API_KEY
 
-def translate_text(text, translate_client, target_language):
-    try:
-        translation = translate_client.translate(text, target_language=target_language)
-        return translation['translatedText']
-    except Exception as e:
-        print(f"Error translating text: {e}")
+def get_access_token():
+    with open(API_KEY, 'r') as f:
+        credentials = json.load(f)
+    credentials_info = jwt.Credentials.from_service_account_info(credentials)
+    scoped_credentials = credentials_info.with_scopes(['https://www.googleapis.com/auth/cloud-platform'])
+    auth_req = Request()
+    scoped_credentials.refresh(auth_req)
+    return scoped_credentials.token
+
+def translate_text(text, access_token, target_language):
+    url = "https://translation.googleapis.com/v3/projects/your_project_id:translateText"
+    headers = {
+        "Authorization": f"Bearer {access_token}",
+        "Content-Type": "application/json"
+    }
+    body = {
+        "targetLanguageCode": target_language,
+        "contents": [text],
+        "mimeType": "text/plain"
+    }
+    response = requests.post(url, headers=headers, json=body)
+    if response.status_code == 200:
+        return response.json()['translations'][0]['translatedText']
+    else:
+        print(f"Error translating text: {response.status_code} {response.text}")
         return text
 
-def translate_shape_text(shape, translate_client, target_language):
+def translate_shape_text(shape, access_token, target_language):
     if not hasattr(shape, "text_frame") or not shape.text_frame:
         return
 
     for paragraph in shape.text_frame.paragraphs:
         for run in paragraph.runs:
-            translated_text = translate_text(run.text, translate_client, target_language)
+            translated_text = translate_text(run.text, access_token, target_language)
             run.text = translated_text
 
 def process_presentation(input_file, target_language):
@@ -34,7 +56,7 @@ def process_presentation(input_file, target_language):
         return
 
     output_ppt = Presentation()
-    translate_client = translate.Client()
+    access_token = get_access_token()
     slide_count = len(input_ppt.slides)
     
     with tqdm(total=slide_count, desc="Translating", unit="slide") as pbar:
@@ -44,7 +66,7 @@ def process_presentation(input_file, target_language):
             for shape in slide.shapes:
                 if hasattr(shape, "text_frame") and shape.text_frame:
                     try:
-                        translate_shape_text(shape, translate_client, target_language)
+                        translate_shape_text(shape, access_token, target_language)
                         new_shape = new_slide.shapes.add_textbox(shape.left, shape.top, shape.width, shape.height)
                         new_text_frame = new_shape.text_frame
                         for paragraph in shape.text_frame.paragraphs:
