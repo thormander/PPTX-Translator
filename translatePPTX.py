@@ -102,9 +102,24 @@ def main():
     print("")
 
     parser = argparse.ArgumentParser(description="Translate a PowerPoint presentation. Usage: python3 translatePPTX.py <input_pptx_file> <target_language>")
-    parser.add_argument("input_file", help="Path to the input PowerPoint file")
-    parser.add_argument("target_language", help="Target language for translation (ex: 'en' for English, 'es' for Spanish)")
+    parser.add_argument("input_file", nargs='?', help="Path to the input PowerPoint file")
+    parser.add_argument("target_language", nargs='?', help="Target language for translation (ex: 'en' for English, 'es' for Spanish)")
+    parser.add_argument("--list-langs", "-l", action="store_true", help="List supported languages and exit")
     args = parser.parse_args()
+
+    # If --list-langs flag is provided, list the supported languages and exit
+    if args.list_langs:
+        supported_languages = get_supported_languages(API_KEY)
+        if supported_languages:
+            print("Supported languages:")
+            print(supported_languages)
+        else:
+            print("Failed to fetch supported languages.")
+        return
+
+    if not args.input_file or not args.target_language:
+        parser.print_help()
+        return
 
     # check if users code is valid before running it (otherwise it will cause a bunch of errors @ api endpoint)
     valid_language_codes = get_supported_languages(API_KEY)
