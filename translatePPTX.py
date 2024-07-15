@@ -3,15 +3,23 @@ import argparse
 import requests
 from pptx import Presentation
 from tqdm import tqdm
+from dotenv import load_dotenv
 
 '''
 You need to pip install to your python enviroment the following command:
 
 pip install requests python-pptx tqdm
+pip install pyton-dotenv
 '''
+# load enviroment variables from .env
+load_dotenv()
 
-# Set your Google Cloud API key
-API_KEY = ""
+# Get your Google Cloud API key from environment variable
+API_KEY = os.getenv('GOOGLE_API_KEY')
+
+# check for api key
+if not API_KEY:
+    raise ValueError("No API key found. Please set the 'GOOGLE_API_KEY' environment variable.")
 
 # GET languages supported
 def get_supported_languages():
