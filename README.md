@@ -22,7 +22,7 @@ Arguments within brackets [...] are optional
 
 Example Usage for accessing list of available languages: 
 ```console
-translatePPTX.py --list-langs
+python3 translatePPTX.py --list-langs
 ```
 
 ## Packages
