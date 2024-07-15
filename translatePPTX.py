@@ -14,8 +14,8 @@ pip install requests python-pptx tqdm
 API_KEY = ""
 
 # GET languages supported
-def get_supported_languages(api_key):
-    url = f"https://translation.googleapis.com/language/translate/v2/languages?key={api_key}"
+def get_supported_languages():
+    url = f"https://translation.googleapis.com/language/translate/v2/languages?key={API_KEY}"
     response = requests.get(url)
     if response.status_code == 200:
         languages = response.json().get("data", {}).get("languages", [])
@@ -109,7 +109,7 @@ def main():
 
     # If --list-langs flag is provided, list the supported languages and exit
     if args.list_langs:
-        supported_languages = get_supported_languages(API_KEY)
+        supported_languages = get_supported_languages()
         if supported_languages:
             print("Supported languages:")
             print(supported_languages)
@@ -122,7 +122,7 @@ def main():
         return
 
     # check if users code is valid before running it (otherwise it will cause a bunch of errors @ api endpoint)
-    valid_language_codes = get_supported_languages(API_KEY)
+    valid_language_codes = get_supported_languages()
 
     if args.target_language in valid_language_codes:
         process_presentation(args.input_file, args.target_language)
