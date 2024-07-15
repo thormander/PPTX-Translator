@@ -16,9 +16,14 @@ You need to create an account at [Google Cloud Console](https://cloud.google.com
 ```console
 python3 translatePPTX.py [-h] [--list-langs] <PPTX file you want to translate> <target language>
 ```
-arguments within brackets [...] are optional
-[-h] is to for help
-[--list-langs] is to list all compatiable languages
+Arguments within brackets [...] are optional
+- [-h] is to for help
+- [--list-langs] is to list all compatiable languages
+
+Example Usage for accessing list of available languages: 
+```console
+translatePPTX.py --list-langs
+```
 
 ## Packages
 
