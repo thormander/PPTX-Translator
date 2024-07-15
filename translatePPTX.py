@@ -1,29 +1,15 @@
 import os
-import json
 import argparse
 import requests
 from pptx import Presentation
 from tqdm import tqdm
-from google.auth import jwt
-from google.auth.transport.requests import Request
 
-# Set the Google Cloud API key
-API_KEY = "Google_API.json"
-os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = API_KEY
+# Set your Google Cloud API key
+API_KEY = "YOUR_GOOGLE_CLOUD_API_KEY"
 
-def get_access_token():
-    with open(API_KEY, 'r') as f:
-        credentials = json.load(f)
-    credentials_info = jwt.Credentials.from_service_account_info(credentials)
-    scoped_credentials = credentials_info.with_scopes(['https://www.googleapis.com/auth/cloud-platform'])
-    auth_req = Request()
-    scoped_credentials.refresh(auth_req)
-    return scoped_credentials.token
-
-def translate_text(text, access_token, target_language):
-    url = "https://translation.googleapis.com/v3/projects/your_project_id:translateText"
+def translate_text(text, target_language):
+    url = f"https://translation.googleapis.com/v3/projects/your_project_id:translateText?key={API_KEY}"
     headers = {
-        "Authorization": f"Bearer {access_token}",
         "Content-Type": "application/json"
     }
     body = {
@@ -38,13 +24,13 @@ def translate_text(text, access_token, target_language):
         print(f"Error translating text: {response.status_code} {response.text}")
         return text
 
-def translate_shape_text(shape, access_token, target_language):
+def translate_shape_text(shape, target_language):
     if not hasattr(shape, "text_frame") or not shape.text_frame:
         return
 
     for paragraph in shape.text_frame.paragraphs:
         for run in paragraph.runs:
-            translated_text = translate_text(run.text, access_token, target_language)
+            translated_text = translate_text(run.text, target_language)
             run.text = translated_text
 
 def process_presentation(input_file, target_language):
@@ -56,7 +42,6 @@ def process_presentation(input_file, target_language):
         return
 
     output_ppt = Presentation()
-    access_token = get_access_token()
     slide_count = len(input_ppt.slides)
     
     with tqdm(total=slide_count, desc="Translating", unit="slide") as pbar:
@@ -66,7 +51,7 @@ def process_presentation(input_file, target_language):
             for shape in slide.shapes:
                 if hasattr(shape, "text_frame") and shape.text_frame:
                     try:
-                        translate_shape_text(shape, access_token, target_language)
+                        translate_shape_text(shape, target_language)
                         new_shape = new_slide.shapes.add_textbox(shape.left, shape.top, shape.width, shape.height)
                         new_text_frame = new_shape.text_frame
                         for paragraph in shape.text_frame.paragraphs:
