@@ -91,7 +91,7 @@ def main():
         return escape_mask.format(parameters, uri, label)
     # ------------------------
 
-    print("Please use the 2 letter language code for the argument!")
+    print("Please use the ISO 639 language code for the argument!")
     print("Example language syntax:")
     print("English: en")
     print("Spanish: es")
