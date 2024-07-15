@@ -4,8 +4,14 @@ import requests
 from pptx import Presentation
 from tqdm import tqdm
 
+'''
+You need to pip install to your python enviroment the following command:
+
+pip install requests python-pptx tqdm
+'''
+
 # Set your Google Cloud API key
-API_KEY = "API KEY HERE"
+API_KEY = "AIzaSyA6pPQr7he8hD59u5yUt0urBeWDbbVDVLk"
 
 def translate_text(text, target_language):
     url = f"https://translation.googleapis.com/language/translate/v2?key={API_KEY}"
@@ -61,29 +67,57 @@ def process_presentation(input_file, target_language):
         print(f"Error saving file {output_file}: {e}")
 
 def main():
+    # for link output to console (this sometimes works)
+    def link(uri, label=None):
+        if label is None: 
+            label = uri
+        parameters = ''
+
+        # OSC 8 ; params ; URI ST <name> OSC 8 ;; ST 
+        escape_mask = '\033]8;{};{}\033\\{}\033]8;;\033\\'
+
+        return escape_mask.format(parameters, uri, label)
+    # ------------------------
+
+    print("Please use the 2 letter language code for the argument!")
+    print("Example language syntax:")
+    print("English: en")
+    print("Spanish: es")
+    print("French: fr")
+    print("German: de")
+    print("")
+    print("See Full List of ISO 639 Languages here: " + link('https://en.wikipedia.org/wiki/List_of_ISO_639_language_codes'))
+    print("")
+
     parser = argparse.ArgumentParser(description="Translate a PowerPoint presentation. Usage: python3 translatePPTX.py <input_pptx_file> <target_language>")
     parser.add_argument("input_file", help="Path to the input PowerPoint file")
-    parser.add_argument("target_language", help="Target language for translation (ex: 'en' for English, 'fr' for French)")
+    parser.add_argument("target_language", help="Target language for translation (ex: 'en' for English, 'es' for Spanish)")
     args = parser.parse_args()
 
-    print("Example language syntax:")
-    example_usages = [
-        ("English", "en"),
-        ("Spanish", "es"),
-        ("French", "fr"),
-        ("German", "de"),
-        ("Italian", "it"),
-        ("Portuguese", "pt"),
-        ("Russian", "ru"),
-        ("Chinese (Simplified)", "zh-CN"),
-        ("Japanese", "ja"),
-        ("Korean", "ko")
+    # check if users code is valid before running it (it will cause a bunch of errors @ api endpoint)
+    valid_language_codes = [
+        'aa', 'ab', 'ae', 'af', 'ak', 'am', 'an', 'ar', 'as', 'av', 'ay', 'az', 'ba', 'be', 'bg', 'bi', 'bm', 'bn', 'bo', 
+        'br', 'bs', 'ca', 'ce', 'ch', 'co', 'cr', 'cs', 'cu', 'cv', 'cy', 'da', 'de', 'dv', 'dz', 'ee', 'el', 'en', 'eo', 
+        'es', 'et', 'eu', 'fa', 'ff', 'fi', 'fj', 'fo', 'fr', 'fy', 'ga', 'gd', 'gl', 'gn', 'gu', 'gv', 'ha', 'he', 'hi', 
+        'ho', 'hr', 'ht', 'hu', 'hy', 'hz', 'ia', 'id', 'ie', 'ig', 'ii', 'ik', 'io', 'is', 'it', 'iu', 'ja', 'jv', 'ka', 
+        'kg', 'ki', 'kj', 'kk', 'kl', 'km', 'kn', 'ko', 'kr', 'ks', 'ku', 'kv', 'kw', 'ky', 'la', 'lb', 'lg', 'li', 'ln', 
+        'lo', 'lt', 'lu', 'lv', 'mg', 'mh', 'mi', 'mk', 'ml', 'mn', 'mr', 'ms', 'mt', 'my', 'na', 'nb', 'nd', 'ne', 'ng', 
+        'nl', 'nn', 'no', 'nr', 'nv', 'ny', 'oc', 'oj', 'om', 'or', 'os', 'pa', 'pi', 'pl', 'ps', 'pt', 'qu', 'rm', 'rn', 
+        'ro', 'ru', 'rw', 'sa', 'sc', 'sd', 'se', 'sg', 'si', 'sk', 'sl', 'sm', 'sn', 'so', 'sq', 'sr', 'ss', 'st', 'su', 
+        'sv', 'sw', 'ta', 'te', 'tg', 'th', 'ti', 'tk', 'tl', 'tn', 'to', 'tr', 'ts', 'tt', 'tw', 'ty', 'ug', 'uk', 'ur', 
+        'uz', 've', 'vi', 'vo', 'wa', 'wo', 'xh', 'yi', 'yo', 'za', 'zh', 'zu'
     ]
 
-    for language, code in example_usages:
-        print(f"  python translatePPTX.py <your_PPTX_file> {code}  # {language}")
+    if args.target_language in valid_language_codes:
+        process_presentation(args.input_file, args.target_language)
+    else:
+        print("ERROR: NOT A VALID LANGUAGE CODE")
+        print("")
+        print("ERROR: Please submit a valid language code")
+        print("")
 
-    process_presentation(args.input_file, args.target_language)
+        return -1
+
 
 if __name__ == "__main__":
     main()
