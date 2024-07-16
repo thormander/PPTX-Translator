@@ -32,7 +32,7 @@ def get_supported_languages():
         print(f"Error fetching supported languages: {response.status_code} {response.text}")
         return []
 
-# POST translate test
+# POST translate text
 def translate_text(text, target_language):
     url = f"https://translation.googleapis.com/language/translate/v2?key={API_KEY}"
     headers = {
