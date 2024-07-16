@@ -24,6 +24,7 @@ python3 translatePPTX.py [-h] [--list-langs] <PPTX file you want to translate> <
 Arguments within brackets [...] are optional
 - [-h] is for help
 - [--list-langs] is to list all compatiable languages
+  - We use google translate v2 API, so refer here for more information on languages supported --> [Language support](https://cloud.google.com/translate/docs/languages) 
 
 Example Usage for accessing list of available languages: 
 ```console
