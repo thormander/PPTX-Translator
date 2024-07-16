@@ -4,6 +4,13 @@ PPTX Translator is a Python script to translate text in PowerPoint presentations
 
 The goal of this is to **retain original formatting** of the powerpoint and only translate the text
 
+
+
+https://github.com/user-attachments/assets/05b50d1f-ac38-4c69-a82d-4d7c326cd904
+
+
+
+
 ## Requirements
 
 You need to create an account at [Google Cloud Console](https://cloud.google.com/cloud-console) --> they have a free trial for 90 days
