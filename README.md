@@ -22,7 +22,7 @@ You need to create an account at [Google Cloud Console](https://cloud.google.com
 python3 translatePPTX.py [-h] [--list-langs] <PPTX file you want to translate> <target language>
 ```
 Arguments within brackets [...] are optional
-- [-h] is to for help
+- [-h] is for help
 - [--list-langs] is to list all compatiable languages
 
 Example Usage for accessing list of available languages: 
