@@ -1,4 +1,4 @@
-# PPTX Translator
+# PPTX Translator using Google Translate API
 
 PPTX Translator is a Python script to translate text in PowerPoint presentations to a specified language using the Google Cloud Translation API.
 
